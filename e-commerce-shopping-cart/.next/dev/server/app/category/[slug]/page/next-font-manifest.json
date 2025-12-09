@@ -1,7 +1,11 @@
 {
   "pages": {},
   "app": {
+<<<<<<< HEAD
     "[project]/app/category/[slug]/page": [
+=======
+    "[project]/Videos/project/DAC_PROJECT/e-commerce-shopping-cart/app/category/[slug]/page": [
+>>>>>>> 5748c62f33fd6d3cc47034b20cd1204cc24d1268
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2"
     ]
   },

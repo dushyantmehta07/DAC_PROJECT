@@ -30,7 +30,11 @@ export function ProductCard({ product }: ProductCardProps) {
     })
     toast({
       title: "Added to cart",
+<<<<<<< HEAD
       description: `${product.name} added to your cart.`,
+=======
+      description: `${product.name} has been added to your cart.`,
+>>>>>>> 5748c62f33fd6d3cc47034b20cd1204cc24d1268
     })
   }
 
@@ -69,9 +73,15 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="text-xs text-muted-foreground">({product.review_count.toLocaleString()})</span>
         </div>
         <div className="flex items-center gap-2 mb-3">
+<<<<<<< HEAD
           <span className="text-lg font-bold text-foreground">Rs.{product.price.toFixed(2)}</span>
           {product.original_price && (
             <span className="text-sm text-muted-foreground line-through">Rs.{product.original_price.toFixed(2)}</span>
+=======
+          <span className="text-lg font-bold text-foreground">&#8377;{product.price.toFixed(2)}</span>
+          {product.original_price && (
+            <span className="text-sm text-muted-foreground line-through">&#8377;{product.original_price.toFixed(2)}</span>
+>>>>>>> 5748c62f33fd6d3cc47034b20cd1204cc24d1268
           )}
         </div>
         <Button
