@@ -24,6 +24,17 @@ const Navbar = () => {
           </ul>
         </li>
 
+        <li>
+          Home & Kitchen
+          <ul className="dropdown">
+            <li><Link to="/home-kitchen/furniture">Furniture</Link></li>
+            <li><Link to="/home-kitchen/decor">Home Decor</Link></li>
+            <li><Link to="/home-kitchen/kitchen">Kitchen</Link></li>
+          </ul>
+        </li>
+
+       
+
         <li><Link to="/cart">Cart</Link></li>
       </ul>
     </nav>
