@@ -1,4 +1,4 @@
-export const gounsPage1=[
+export const nightsuitsPage1=[
     {
         "image": "https://rukminim1.flixcart.com/image/612/612/kw5ag7k0/kurta/f/j/g/xxl-sg1011-sanganeri-feb-original-imag8w9xbbakjkju.jpeg?q=70",
         "brand": "Riya Creation",
