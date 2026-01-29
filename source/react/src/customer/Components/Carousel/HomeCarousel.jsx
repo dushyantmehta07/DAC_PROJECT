@@ -4,28 +4,31 @@ import "react-alice-carousel/lib/alice-carousel.css";
 import { homeCarouselData } from "./HomeCaroselData";
 import { useNavigate } from "react-router-dom";
 
-const handleDragStart = (e) => e.preventDefault();
-
 const HomeCarousel = () => {
   const navigate = useNavigate();
-  const item = homeCarouselData.map((item) => (
+
+  const items = homeCarouselData.map((item, index) => (
     <img
-      className="cursor-pointer rounded-md"
-      onClick={() => navigate(item.path)}
+      key={index}
       src={item.image}
-      alt=""
-      onDragStart={handleDragStart}
-      role="presentation"
+      alt={`banner-${index}`}
+      className="w-full h-[420px] md:h-[480px] lg:h-[520px] object-cover cursor-pointer rounded-md"
+      onClick={() => navigate(item.path)}
+      onDragStart={(e) => e.preventDefault()}
+      loading="lazy"
     />
   ));
+
   return (
     <AliceCarousel
+      items={items}
       mouseTracking
-      items={item}
       autoPlay
       infinite
       autoPlayInterval={2000}
+      animationDuration={500}
       disableButtonsControls
+      disableDotsControls={false}
     />
   );
 };
