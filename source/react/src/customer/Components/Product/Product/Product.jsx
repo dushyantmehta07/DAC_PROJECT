@@ -22,7 +22,9 @@ import { useEffect } from "react";
 import {
   findProducts,
 } from "../../../../Redux/Customers/Product/Action";
-import { Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress, getIconUtilityClass } from "@mui/material";
+import { mens_kurta } from '../../../../Data/Men/men_kurta';
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -42,7 +44,7 @@ export default function Product() {
     setIsLoaderOpen(false);
   };
 
-  // const filter = decodeURIComponent(location.search);
+  const filter = decodeURIComponent(location.search);
   const decodedQueryString = decodeURIComponent(location.search);
   const searchParams = new URLSearchParams(decodedQueryString);
   const colorValue = searchParams.get("color");
@@ -53,7 +55,7 @@ export default function Product() {
   const pageNumber = searchParams.get("page") || 1;
   const stock = searchParams.get("stock");
 
-  // console.log("location - ", colorValue, sizeValue,price,disccount);
+  console.log("location - ", colorValue, sizeValue,price,disccount);
 
   const handleSortChange = (value) => {
     const searchParams = new URLSearchParams(location.search);
@@ -104,6 +106,7 @@ export default function Product() {
       filterValues = filterValues[0]
         .split(",")
         .filter((item) => item !== value);
+
       if (filterValues.length === 0) {
         searchParams.delete(sectionId);
       }
@@ -454,9 +457,11 @@ export default function Product() {
                 {/* Product grid */}
                 <div className="lg:col-span-4 w-full ">
                   <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md ">
-                    {customersProduct?.products?.content?.map((item) => (
+                    {/* {customersProduct?.products?.content?.map((item) => (
                       <ProductCard product={item} />
-                    ))}
+                    ))} */}
+                    {mens_kurta.map((item)=><ProductCard product={item} />)}
+                    
                   </div>
                 </div>
               </div>
