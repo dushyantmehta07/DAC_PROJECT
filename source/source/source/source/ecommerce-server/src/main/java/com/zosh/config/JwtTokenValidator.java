@@ -31,10 +31,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		
 		String jwt = request.getHeader(JwtConstant.JWT_HEADER);
-		System.out.println("jwt ------ "+jwt);
-		if(jwt!=null) {
-			jwt=jwt.substring(7);
-			System.out.println("jwt ------ "+jwt);
+		System.out.println("jwt ------ " + jwt);
+		if(jwt != null && jwt.startsWith("Bearer ")) {
+			jwt = jwt.substring(7);
+			System.out.println("jwt after substring ------ " + jwt);
 			try {
 				
 				SecretKey key= Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
@@ -51,12 +51,18 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(athentication);
 				
 			} catch (Exception e) {
-				// TODO: handle exception
+				System.out.println("JWT validation error: " + e.getMessage());
 				throw new BadCredentialsException("invalid token...");
 			}
 		}
 		filterChain.doFilter(request, response);
 		
+	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String path = request.getServletPath();
+		return path.startsWith("/api/auth/") || path.startsWith("/auth/");
 	}
 
 }

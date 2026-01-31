@@ -24,22 +24,18 @@ const registerFailure = error => ({ type: REGISTER_FAILURE, payload: error });
 export const register = userData => async dispatch => {
   dispatch(registerRequest());
   try {
-    const response=await axios.post(`${API_BASE_URL}/auth/signup`, userData);
+    const response=await axios.post(`${API_BASE_URL}/api/auth/signup`, userData);
     const user = response.data;
     console.log("register response :- ", user);
 
-    // ✅ Safely extract token from any backend format
-    const jwt =
-      user.token ||
-      user.jwt ||
-      user.accessToken ||
-      user;
-
-    if (jwt) {
-      localStorage.setItem("jwt", jwt);
-      console.log("Saved JWT (register):", jwt);
+    // ✅ Properly extract token from AuthResponse object
+    const jwtToken = user.token;
+    
+    if (jwtToken && typeof jwtToken === 'string') {
+      localStorage.setItem("jwt", jwtToken);
+      console.log("Saved JWT (register):", jwtToken);
     } else {
-      console.warn("JWT not found in response!");
+      console.warn("JWT not found in response! Response:", user);
     }
 
     dispatch(registerSuccess(user));
@@ -57,22 +53,18 @@ const loginFailure = error => ({ type: LOGIN_FAILURE, payload: error });
 export const login = userData => async dispatch => {
   dispatch(loginRequest());
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/signin`, userData);
+    const response = await axios.post(`${API_BASE_URL}/api/auth/signin`, userData);
     const user = response.data;
     console.log("login response :- ", user);
 
-    // ✅ Safely extract token from any backend format
-    const jwt =
-      user.token ||
-      user.jwt ||
-      user.accessToken ||
-      user;
-
-    if (jwt) {
-      localStorage.setItem("jwt", jwt);
-      console.log("Saved JWT:", localStorage.getItem("jwt"));
+    // ✅ Properly extract token from AuthResponse object
+    const jwtToken = user.token;
+    
+    if (jwtToken && typeof jwtToken === 'string') {
+      localStorage.setItem("jwt", jwtToken);
+      console.log("Saved JWT:", jwtToken);
     } else {
-      console.warn("JWT not found in response!");
+      console.warn("JWT not found in response! Response:", user);
     }
 
     dispatch(loginSuccess(user));

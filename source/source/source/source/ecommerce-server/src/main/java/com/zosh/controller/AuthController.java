@@ -1,5 +1,8 @@
 package com.zosh.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zosh.config.JwtTokenProvider;
+import com.zosh.exception.ProductException;
 import com.zosh.exception.UserException;
 import com.zosh.modal.Cart;
 import com.zosh.modal.User;
 import com.zosh.repository.UserRepository;
+import com.zosh.request.AddItemRequest;
 import com.zosh.request.LoginRequest;
 import com.zosh.response.AuthResponse;
 import com.zosh.service.CartService;
@@ -27,7 +32,7 @@ import com.zosh.user.domain.UserRole;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
 	private UserRepository userRepository;
@@ -72,11 +77,14 @@ public class AuthController {
 	        User savedUser= userRepository.save(createdUser);
 	        
 	        cartService.createCart(savedUser);
+	        
+	        // Add demo products to cart for presentation
+	        populateDemoCart(savedUser.getId());
 
 	        Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 	        
-	        String token = jwtTokenProvider.generateToken(authentication);
+	        String token = jwtTokenProvider.generateToken(authentication.getName());
 
 	        AuthResponse authResponse= new AuthResponse(token, "Signup successful", true);
 			
@@ -94,8 +102,13 @@ public class AuthController {
         Authentication authentication = authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
+        // Get user from email and populate demo cart
+        User user = userRepository.findByEmail(username);
+        if (user != null) {
+            populateDemoCart(user.getId());
+        }
         
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = jwtTokenProvider.generateToken(authentication.getName());
         AuthResponse authResponse= new AuthResponse();
 		
 		authResponse.setStatus(true);
@@ -104,6 +117,51 @@ public class AuthController {
 		
         return new ResponseEntity<AuthResponse>(authResponse,HttpStatus.OK);
     }
+	
+	/**
+	 * Populates cart with demo products for presentation purposes
+	 * These products are hardcoded for demonstration to teacher
+	 */
+	private void populateDemoCart(Long userId) {
+		try {
+			// Demo products for cart - using valid product IDs from database
+			List<AddItemRequest> demoItems = new ArrayList<>();
+			
+			// Product 4: Men Printed Pure Cotton Straight Kurta - Size M, Qty 1
+			AddItemRequest item1 = new AddItemRequest();
+			item1.setProductId(4L);
+			item1.setSize("M");
+			item1.setQuantity(1);
+			demoItems.add(item1);
+			
+			// Product 5: Men Embroidered Jacquard Straight Kurta - Size L, Qty 1
+			AddItemRequest item2 = new AddItemRequest();
+			item2.setProductId(5L);
+			item2.setSize("L");
+			item2.setQuantity(1);
+			demoItems.add(item2);
+			
+			// Product 437: Running Shoes - Size 8, Qty 1
+			AddItemRequest item3 = new AddItemRequest();
+			item3.setProductId(437L);
+			item3.setSize("8");
+			item3.setQuantity(1);
+			demoItems.add(item3);
+			
+			// Add each item to cart
+			for (AddItemRequest req : demoItems) {
+				try {
+					cartService.addCartItem(userId, req);
+					System.out.println("Added demo product " + req.getProductId() + " to cart for user " + userId);
+				} catch (ProductException e) {
+					System.out.println("Could not add product " + req.getProductId() + ": " + e.getMessage());
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Error populating demo cart: " + e.getMessage());
+		}
+	}
 	
 	private Authentication authenticate(String username, String password) {
         UserDetails userDetails = customUserDetails.loadUserByUsername(username);

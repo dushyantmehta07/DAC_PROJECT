@@ -1,0 +1,77 @@
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.zosh.exception.ProductException;
+import com.zosh.exception.UserException;
+import com.zosh.modal.Product;
+import com.zosh.modal.Rating;
+import com.zosh.modal.User;
+import com.zosh.request.RatingRequest;
+import com.zosh.service.ProductService;
+import com.zosh.service.RatingServices;
+import com.zosh.service.UserService;
+
+@RestController
+@RequestMapping("/api/products")
+public class UserProductController {
+	
+	private ProductService productService;
+	private UserService userService;
+	private RatingServices ratingServices;
+	
+	public UserProductController(ProductService productService,UserService userService,RatingServices ratingServices) {
+		this.productService=productService;
+		this.userService=userService;
+		this.ratingServices=ratingServices;
+	}
+	
+	// FIXED: Changed from "/id/{id}" to "/{id}" to match frontend call
+	@GetMapping("/id/{id}")
+	public ResponseEntity<Product> findProductByIdHandler(@PathVariable Long id){
+		
+		System.out.println("Finding product by ID: " + id);
+		
+		Product product=productService.findProductById(id);
+		
+		return new ResponseEntity<Product>(product,HttpStatus.ACCEPTED);
+	}
+	
+	// Alternative endpoint for backward compatibility
+	@GetMapping("/{id}")
+	public ResponseEntity<Product> findProductByIdHandlerAlt(@PathVariable Long id){
+		
+		System.out.println("Finding product by ID (alt): " + id);
+		
+		Product product=productService.findProductById(id);
+		
+		return new ResponseEntity<Product>(product,HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/create")
+	public ResponseEntity<Rating> createRatingHandler(@RequestBody RatingRequest req,@RequestHeader("Authorization") String jwt) throws UserException{
+		User user=userService.findUserProfileByJwt(jwt);
+		Rating rating=ratingServices.createRating(req, user);
+		return new ResponseEntity<Rating>(rating,HttpStatus.ACCEPTED);
+	}
+	
+	// Find product by color, size, etc
+	@RequestMapping("")
+	public ResponseEntity<List<Product>> findProductByCategoryHandler(@RequestParam String category){
+		
+		List<Product> products=productService.findProductByCategory(category);
+		
+		return new ResponseEntity<List<Product>>(products,HttpStatus.ACCEPTED);
+	}
+}
+</parameter>
+<parameter name="path">/Users/dushyantmehta/Desktop/final/DAC_PROJECT/source/source/source/source/ecommerce-server/src/main/java/com/zosh/controller/UserProductController.java</parameter>

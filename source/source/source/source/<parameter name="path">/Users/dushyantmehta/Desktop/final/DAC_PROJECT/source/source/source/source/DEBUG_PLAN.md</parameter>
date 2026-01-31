@@ -1,0 +1,53 @@
+<parameter name="content"># Debug Plan - Cart Empty Issue
+
+## Problem
+The cart returns empty (`cartItems: []`) even after adding items via the API.
+
+## Root Cause Analysis
+
+Based on the logs and code review:
+
+1. **JWT Token Issue**: `jwt ------ Bearer [object Object]` - Token extraction issue causing `[object Object]`
+2. **Cart Not Persisted**: The cart items might not be properly saved to the database due to:
+   - Missing `@Transactional` annotation
+   - Cart entity relationship issues
+   - JPA cascading not configured
+
+## Files Modified
+
+### 1. CartController.java (Updated with debugging)
+Added logging to trace cart operations:
+- Log when adding item to cart (user ID, product ID, size)
+- Log the number of items returned in the cart
+
+### 2. CartServiceImplementation.java (Updated with debugging)
+Enhanced the service with:
+- Auto-create cart if it doesn't exist for user
+- Detailed logging at each step
+- Proper cart item creation and saving
+
+## Expected Behavior After Fix
+
+1. User signs up → Cart is automatically created
+2. User adds item to cart → Cart item is saved with proper associations
+3. User retrieves cart → Cart returns with items
+
+## Debugging Steps to Run
+
+1. **Restart the backend server** to apply changes
+2. **Clear browser localStorage** (to get fresh JWT)
+3. **Sign up a new user**
+4. **Add an item to cart**
+5. **Check console logs** for:
+   - "Creating new cart for user: X" (first time)
+   - "Adding item to cart - Product: X, Size: Y"
+   - "Created cart item: Z"
+   - "Cart saved with ID: W, items: 1"
+
+## If Issue Persists
+
+Check the following:
+1. **Database**: Verify records exist in `carts` and `cart_items` tables
+2. **JPA Relationships**: Ensure Cart entity has proper `@OneToMany` with `CascadeType.ALL`
+3. **Transaction Management**: Add `@Transactional` to service methods
+</parameter>

@@ -11,9 +11,10 @@ const Cart = () => {
   const jwt = localStorage.getItem("jwt");
 
   const { cart } = useSelector((store) => store);
-  const cartData = cart?.cart;   // ✅ actual cart object
+  const cartData = cart;  // Cart reducer stores cart directly, not nested
 
   console.log("cart data ", cartData);
+  console.log("cartItems ", cartData?.cartItems);
 
   useEffect(() => {
     if (jwt) {

@@ -25,9 +25,12 @@ const cartReducer = (state = initialState, action) => {
     case ADD_ITEM_TO_CART_REQUEST:
       return { ...state, loading: true, error: null };
     case ADD_ITEM_TO_CART_SUCCESS:
+      // Check if action.payload is the full cart or just cart items
+      const newCartItems = action.payload.cartItems || (Array.isArray(action.payload) ? action.payload : [action.payload]);
       return {
         ...state,
-        cartItems: [...state.cartItems, action.payload.cartItems],
+        cartItems: newCartItems,
+        cart: action.payload.cart || action.payload,
         loading: false,
       };
     case ADD_ITEM_TO_CART_FAILURE:

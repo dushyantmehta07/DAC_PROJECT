@@ -23,9 +23,14 @@ public class AppConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
 		.authorizeHttpRequests(Authorize -> Authorize
+				.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/auth/**").permitAll()
+				.requestMatchers("/api/products/**").permitAll()
+				.requestMatchers("/api/categories/**").permitAll()
+				.requestMatchers("/api/public/**").permitAll()
 				.requestMatchers("/api/**").authenticated()
 				.anyRequest().permitAll()
 				)

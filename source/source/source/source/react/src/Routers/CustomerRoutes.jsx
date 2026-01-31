@@ -19,6 +19,9 @@ import Footer from "../customer/Components/footer/Footer";
 import PaymentSuccess from "../customer/Components/paymentSuccess/PaymentSuccess";
 import RateProduct from "../customer/Components/ReviewProduct/RateProduct";
 import SearchProduct from "../customer/Components/Product/Product/SearchProduct";
+import AuthModal from "../customer/Components/Auth/AuthModal";
+import LoginUserForm from "../customer/Components/Auth/Login";
+import RegisterUserForm from "../customer/Components/Auth/Register";
 
 const CustomerRoutes = () => {
     const location = useLocation();
@@ -34,8 +37,8 @@ const CustomerRoutes = () => {
     <ThemeProvider theme={customerTheme}>
     {showNavigation && <Navigation />}
      <Routes>
-     <Route path="/login" element={<Homepage />}></Route>
-     <Route path="/register" element={<Homepage />}></Route>
+     <Route path="/login" element={<AuthModal />}></Route>
+     <Route path="/register" element={<AuthModal />}></Route>
 
         <Route path="/" element={<Homepage />}></Route>
         <Route path="/products/search" element={<SearchProduct/>}></Route>

@@ -9,6 +9,12 @@ import { findProductById } from "../../../../Redux/Customers/Product/Action";
 import { addItemToCart } from "../../../../Redux/Customers/Cart/Action";
 import { getAllReviews } from "../../../../Redux/Customers/Review/Action";
 import { nightsuitsPage1 } from "../../../../Data/NightSuits/nightsuits";
+import { mensShoesPage1 } from "../../../../Data/shoes";
+import { mens_kurta } from "../../../../Data/Men/men_kurta";
+import { sareePage1 } from "../../../../Data/Saree/page1";
+import { dressPage1 } from "../../../../Data/dress/page1";
+import { kurtaPage1 } from "../../../../Data/Kurta/kurta";
+import { lehenga_page1 } from "../../../../Data/Women/Lehengas";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -59,6 +65,7 @@ function classNames(...classes) {
 export default function ProductDetails() {
   const [selectedSize, setSelectedSize] = useState();
   const [activeImage, setActiveImage] = useState(null);
+  const [localProduct, setLocalProduct] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -66,16 +73,61 @@ export default function ProductDetails() {
   const { productId } = useParams();
   const jwt = localStorage.getItem("jwt");
 
-  const handleSetActiveImage = (image) => {
-    setActiveImage(image);
-  };
+  // Get actual product data from Redux or use fallback
+  const product = customersProduct.product || {};
 
-  const handleSubmit = () => {
-    if (!selectedSize) return;
-
-    const data = { productId, size: selectedSize.name };
-    dispatch(addItemToCart({ data, jwt }));
-    navigate("/cart");
+  // Function to find product in local data files
+  const findProductInLocalData = (id) => {
+    const allProducts = [
+      ...mensShoesPage1,
+      ...mens_kurta,
+      ...sareePage1,
+      ...dressPage1,
+      ...kurtaPage1,
+      ...lehenga_page1,
+      ...nightsuitsPage1
+    ];
+    
+    // If id is numeric, try to find by numeric ID first
+    if (!isNaN(id) && Number(id) > 0) {
+      const found = allProducts.find(p => p.id === Number(id));
+      if (found) return found;
+    }
+    
+    // Try to find by title slug (exact match)
+    const idSlug = id?.toLowerCase().replace(/\s+/g, '-');
+    const foundBySlug = allProducts.find(p => 
+      p.title?.toLowerCase().replace(/\s+/g, '-') === idSlug
+    );
+    if (foundBySlug) return foundBySlug;
+    
+    // Try to find by partial title match
+    const foundByPartialTitle = allProducts.find(p => {
+      if (p.title) {
+        const titleSlug = p.title.toLowerCase().replace(/\s+/g, '-');
+        return titleSlug.includes(idSlug) || idSlug.includes(titleSlug.substring(0, 20));
+      }
+      return false;
+    });
+    if (foundByPartialTitle) return foundByPartialTitle;
+    
+    // Try to find by image URL match (for products without IDs or titles)
+    const foundByImage = allProducts.find(p => 
+      p.image === id || p.imageUrl === id
+    );
+    if (foundByImage) return foundByImage;
+    
+    // Try case-insensitive brand + title combination
+    const foundByBrandTitle = allProducts.find(p => {
+      if (p.brand && p.title) {
+        const brandTitle = `${p.brand} ${p.title}`.toLowerCase().replace(/\s+/g, '-');
+        return brandTitle.includes(idSlug) || idSlug.includes(brandTitle.substring(0, 20));
+      }
+      return false;
+    });
+    if (foundByBrandTitle) return foundByBrandTitle;
+    
+    return null;
   };
 
   useEffect(() => {
@@ -84,6 +136,55 @@ export default function ProductDetails() {
     dispatch(getAllReviews(productId));
   }, [productId, dispatch, jwt]);
 
+  // Try to find product in local data if Redux product is empty
+  useEffect(() => {
+    if (!customersProduct.product || Object.keys(customersProduct.product).length === 0) {
+      const localProd = findProductInLocalData(productId);
+      if (localProd) {
+        setLocalProduct(localProd);
+      }
+    } else {
+      setLocalProduct(null);
+    }
+  }, [customersProduct.product, productId]);
+
+  // Use local product if Redux product is not available
+  const displayProduct = localProduct || product;
+
+  // Add default sizes for products without size data
+  const defaultSizes = [
+    { name: "Free Size" },
+    { name: "S" },
+    { name: "M" },
+    { name: "L" },
+    { name: "XL" }
+  ];
+
+  const handleSetActiveImage = (image) => {
+    setActiveImage(image);
+  };
+
+  const handleSubmit = () => {
+    if (!selectedSize) return;
+
+    // Construct data structure for add to cart - only send required fields
+    const data = {
+      productId: Number(displayProduct?.id) || Number(productId),
+      size: selectedSize.name || selectedSize,
+      quantity: 1
+    };
+    
+    dispatch(addItemToCart({ data, jwt }));
+    navigate("/cart");
+  };
+
+  // Create dynamic breadcrumbs from product data
+  const breadcrumbs = [
+    { id: 1, name: displayProduct.topLavelCategory || "Men", href: `/${displayProduct.topLavelCategory || "men"}` },
+    { id: 2, name: displayProduct.secondLavelCategory || "Clothing", href: `/${displayProduct.topLavelCategory || "men"}/${displayProduct.secondLavelCategory || "clothing"}` },
+    { id: 3, name: displayProduct.thirdLavelCategory || "Products", href: `/${displayProduct.topLavelCategory || "men"}/${displayProduct.secondLavelCategory || "clothing"}/${displayProduct.thirdLavelCategory || "products"}` },
+  ];
+
   return (
     <div className="bg-white lg:px-20">
       <div className="pt-6">
@@ -91,11 +192,12 @@ export default function ProductDetails() {
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb">
           <ol className="mx-auto flex max-w-2xl items-center space-x-2 px-4">
-            {(product.breadcrumbs || []).map((breadcrumb) => (
+            {breadcrumbs.map((breadcrumb) => (
               <li key={breadcrumb.id} className="flex items-center">
-                <span className="mr-2 text-sm font-medium text-gray-900">
+                <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900 hover:text-gray-700">
                   {breadcrumb.name}
-                </span>
+                </a>
+                <span className="text-gray-400">/</span>
               </li>
             ))}
           </ol>
@@ -108,7 +210,7 @@ export default function ProductDetails() {
           <div className="flex flex-col items-center">
             <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]">
               <img
-                src={activeImage?.src || customersProduct.product?.imageUrl}
+                src={activeImage?.src || displayProduct?.image || displayProduct?.imageUrl}
                 alt="product"
                 className="h-full w-full object-cover object-center"
               />
@@ -135,23 +237,25 @@ export default function ProductDetails() {
           <div className="lg:col-span-1 mx-auto max-w-2xl px-4">
 
             <h1 className="text-lg font-semibold">
-              {customersProduct.product?.brand}
+              {displayProduct?.brand}
             </h1>
             <p className="opacity-60">
-              {customersProduct.product?.title}
+              {displayProduct?.title}
             </p>
 
-            {/* Price */}
+            {/* Price - Handle both price formats */}
             <div className="flex space-x-5 items-center mt-4">
               <p className="font-semibold">
-                ₹{customersProduct.product?.discountedPrice}
+                {displayProduct?.selling_price || `₹${displayProduct?.discountedPrice}`}
               </p>
               <p className="opacity-50 line-through">
-                ₹{customersProduct.product?.price}
+                {displayProduct?.price ? `₹${displayProduct?.price}` : ""}
               </p>
-              <p className="text-green-600 font-semibold">
-                {customersProduct.product?.discountPersent}% Off
-              </p>
+              {displayProduct?.disscount && (
+                <p className="text-green-600 font-semibold">
+                  {displayProduct?.disscount}
+                </p>
+              )}
             </div>
 
             {/* Rating */}
@@ -166,7 +270,8 @@ export default function ProductDetails() {
             <form className="mt-6" onSubmit={handleSubmit}>
               <RadioGroup value={selectedSize} onChange={setSelectedSize}>
                 <div className="grid grid-cols-4 gap-4">
-                  {(product.sizes || []).map((size) => (
+                  {/* Use actual product sizes from Redux/local data or fallback to default */}
+                  {(displayProduct?.sizes || defaultSizes).map((size) => (
                     <RadioGroup.Option
                       key={size.name}
                       value={size}

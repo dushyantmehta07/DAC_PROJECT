@@ -63,13 +63,40 @@ console.log("cart ",data)
       payload: data,
     });
   } catch (error) {
-    dispatch({
-      type: GET_CART_FAILURE,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
+    // If cart doesn't exist, try to create one
+    if (error.response && error.response.status === 404) {
+      console.log("Cart not found, creating new cart...");
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+            "Content-Type":"application/json"
+          },
+        };
+        const { data: newCart } = await axios.post(`${API_BASE_URL}/api/cart/create`, {}, config);
+        console.log("Created new cart: ", newCart);
+        dispatch({
+          type: GET_CART_SUCCESS,
+          payload: newCart,
+        });
+      } catch (createError) {
+        console.error("Failed to create cart:", createError);
+        dispatch({
+          type: GET_CART_FAILURE,
+          payload: createError.response && createError.response.data.message
+            ? createError.response.data.message
+            : createError.message,
+        });
+      }
+    } else {
+      dispatch({
+        type: GET_CART_FAILURE,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
   }
 };
 

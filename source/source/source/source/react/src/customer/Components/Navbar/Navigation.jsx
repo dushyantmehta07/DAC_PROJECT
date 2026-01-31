@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
+/* eslint-disable no-restricted-globals */
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
+/* eslint-enable no-restricted-globals */
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -53,9 +55,9 @@ export default function Navigation() {
     setOpenAuthModal(false);
   };
 
-  const handleCategoryClick = (category, section, item, close) => {
+  const handleCategoryClick = (category, section, item, closeMenu) => {
     navigate(`/${category.id}/${section.id}/${item.id}`);
-    close();
+    closeMenu();
   };
 
   useEffect(() => {
@@ -189,8 +191,18 @@ export default function Navigation() {
                             >
                               {section.items.map((item) => (
                                 <li key={item.name} className="flow-root">
-                                  <p className="-m-2 block p-2 text-gray-500">
-                                    {"item.name"}
+                                  <p
+                                    onClick={() =>
+                                      handleCategoryClick(
+                                        category,
+                                        section,
+                                        item,
+                                        () => setOpen(false)
+                                      )
+                                    }
+                                    className="cursor-pointer -m-2 block p-2 text-gray-500 hover:text-gray-800"
+                                  >
+                                    {item.name}
                                   </p>
                                 </li>
                               ))}
@@ -279,7 +291,7 @@ export default function Navigation() {
                 <div className="flex h-full space-x-8">
                   {navigation.categories.map((category) => (
                     <Popover key={category.name} className="flex">
-                      {({ open, close }) => (
+                      {({ open, close: closePopover }) => (
                         <>
                           <div className="relative flex">
                             <Popover.Button
@@ -371,7 +383,7 @@ export default function Navigation() {
                                                       category,
                                                       section,
                                                       item,
-                                                      close
+                                                      closePopover
                                                     )
                                                   }
                                                   className="cursor-pointer hover:text-gray-800"
@@ -485,7 +497,7 @@ export default function Navigation() {
                       aria-hidden="true"
                     />
                     <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      {cart.cart?.totalItem}
+                      {cart.cart?.totalItem || 0}
                     </span>
                     <span className="sr-only">items in cart, view bag</span>
                   </Button>

@@ -24,6 +24,80 @@ import {
 } from "../../../../Redux/Customers/Product/Action";
 import { Backdrop, CircularProgress, getIconUtilityClass } from "@mui/material";
 import { mens_kurta } from '../../../../Data/Men/men_kurta';
+import { sareePage1 } from '../../../../Data/Saree/page1';
+import { dressPage1 } from '../../../../Data/dress/page1';
+import { nightsuitsPage1 } from '../../../../Data/NightSuits/nightsuits';
+import { kurtaPage1 } from '../../../../Data/Kurta/kurta';
+import { mensShoesPage1 } from '../../../../Data/shoes';
+import { lehenga_page1 } from '../../../../Data/Women/Lehengas';
+import men_shirt from '../../../../Data/Men/men_shirt.json';
+import men_jeans from '../../../../Data/Men/men_jeans.json';
+import women_top from '../../../../Data/Women/women_top.json';
+import women_dress from '../../../../Data/Women/women_dress.json';
+import women_jeans from '../../../../Data/Women/women_jeans.json';
+
+
+// Product data mapping based on category
+const getProductsByCategory = (lavelOne, lavelTwo, lavelThree) => {
+  // Create lowercase keys for case-insensitive matching
+  const categoryKey = `${lavelOne?.toLowerCase()}_${lavelTwo?.toLowerCase()}_${lavelThree?.toLowerCase()}`;
+  
+  // Map category paths to their corresponding data
+  const categoryDataMap = {
+    // Men categories
+    'men_clothing_mens_kurta': mens_kurta,
+    'men_clothing_men_kurta': mens_kurta,
+    'men_clothing_kurta': mens_kurta,
+    'men_clothing_mens_kurtas': mens_kurta,
+    'men_clothing_kurtas': mens_kurta,
+    'men_footwear_shoes': mensShoesPage1,
+    'men_footwear_shoe': mensShoesPage1,
+    'men_clothing_shirt': men_shirt,
+    'men_clothing_shirts': men_shirt,
+    'men_clothing_jeans': men_jeans,
+    'men_clothing_men_jeans': men_jeans,
+    'men_clothing_t-shirt': [],
+    'men_clothing_tshirt': [],
+    
+    // Women categories
+    'women_clothing_lehenga_choli': lehenga_page1,
+    'women_clothing_lehengas': lehenga_page1,
+    'women_clothing_lehenga': lehenga_page1,
+    'women_clothing_saree': sareePage1,
+    'women_clothing_sarees': sareePage1,
+    'women_clothing_dress': dressPage1,
+    'women_clothing_dresses': dressPage1,
+    'women_clothing_women_dress': women_dress,
+    'women_clothing_night_suits': nightsuitsPage1,
+    'women_clothing_night_suit': nightsuitsPage1,
+    'women_clothing_kurtas': kurtaPage1,
+    'women_clothing_kurta': kurtaPage1,
+    'women_clothing_women_kurta': kurtaPage1,
+    'women_clothing_tops': women_top,
+    'women_clothing_top': women_top,
+    'women_clothing_women_top': women_top,
+    'women_clothing_women_jeans': women_jeans,
+    'women_clothing_jeans': women_jeans,
+    
+    // Kids categories
+    'kids_clothing_shirt': men_shirt,
+    'kids_clothing_clothing': men_shirt,
+    
+    // Home & Living categories
+    'home_living_bedroom_bedsheets': [],
+    'home_living_home_home': [],
+    
+    // Beauty categories
+    'beauty_makeup_lipstick': [],
+    'beauty_makeup_makeup': [],
+    
+    // Offers categories
+    'offers_clothing_discount': mens_kurta,
+    'offers_offers_offers': mens_kurta,
+  };
+  
+  return categoryDataMap[categoryKey] || [];
+};
 
 
 function classNames(...classes) {
@@ -457,10 +531,8 @@ export default function Product() {
                 {/* Product grid */}
                 <div className="lg:col-span-4 w-full ">
                   <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md ">
-                    {/* {customersProduct?.products?.content?.map((item) => (
-                      <ProductCard product={item} />
-                    ))} */}
-                    {mens_kurta.map((item)=><ProductCard product={item} />)}
+                    {/* Get products based on current category URL */}
+                    {getProductsByCategory(param.lavelOne, param.lavelTwo, param.lavelThree).map((item)=><ProductCard key={item.id || item.title} product={item} />)}
                     
                   </div>
                 </div>

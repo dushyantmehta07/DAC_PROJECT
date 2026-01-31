@@ -13,12 +13,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("""
         SELECT o FROM Order o
         WHERE o.user.id = :userId
-          AND o.orderStatus IN (
-              com.zosh.user.domain.OrderStatus.PLACED,
-              com.zosh.user.domain.OrderStatus.CONFIRMED,
-              com.zosh.user.domain.OrderStatus.SHIPPED,
-              com.zosh.user.domain.OrderStatus.DELIVERED
-          )
+          AND o.orderStatus IN (com.zosh.user.domain.OrderStatus.PLACED,
+                                 com.zosh.user.domain.OrderStatus.CONFIRMED,
+                                 com.zosh.user.domain.OrderStatus.SHIPPED,
+                                 com.zosh.user.domain.OrderStatus.DELIVERED)
     """)
 	List<Order> getUsersOrders(@Param("userId") Long userId);
 

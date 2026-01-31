@@ -30,7 +30,7 @@ function Navbar() {
             <ul className="hidden md:flex items-center space-x-4">
               <li>
                 <Link
-                  to="/men"
+                  to="/women/clothing/tops"
                   className="font-medium text-white hover:text-black"
                 >
                   Men
@@ -38,7 +38,7 @@ function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/women"
+                  to="/women/clothing/dresses"
                   className="font-medium text-white hover:text-black"
                 >
                   Women
@@ -46,7 +46,7 @@ function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/kids"
+                  to="/kids/clothing/shirt"
                   className="font-medium text-white hover:text-black"
                 >
                   Kids
@@ -54,7 +54,7 @@ function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/home-living"
+                  to="/home-living/bedroom/bedsheets"
                   className="font-medium text-white hover:text-black"
                 >
                   Home & Living
@@ -62,7 +62,7 @@ function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/beauty"
+                  to="/beauty/makeup/lipstick"
                   className="font-medium text-white hover:text-black"
                 >
                   Beauty
@@ -70,7 +70,7 @@ function Navbar() {
               </li>
               <li>
                 <Link
-                  to="/offers"
+                  to="/offers/clothing/discount"
                   className="font-medium text-white hover:text-black"
                 >
                   Offers
@@ -133,48 +133,48 @@ function Navbar() {
           <ul className="flex flex-col py-4 space-y-2 px-5">
             <li>
               <Link
-                to="/men"
-                className="font-medium text-white hover:text-black"
+                to="/women/clothing/tops"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Men
               </Link>
             </li>
             <li>
               <Link
-                to="/women"
-                className="font-medium text-white hover:text-black"
+                to="/women/clothing/dresses"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Women
               </Link>
             </li>
             <li>
               <Link
-                to="/kids"
-                className="font-medium text-white hover:text-black"
+                to="/kids/clothing/shirt"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Kids
               </Link>
             </li>
             <li>
               <Link
-                to="/home-living"
-                className="font-medium text-white hover:text-black"
+                to="/home-living/bedroom/bedsheets"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Home & Living
               </Link>
             </li>
             <li>
               <Link
-                to="/beauty"
-                className="font-medium text-white hover:text-black"
+                to="/beauty/makeup/lipstick"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Beauty
               </Link>
             </li>
             <li>
               <Link
-                to="/offers"
-                className="font-medium text-white hover:text-black"
+                to="/offers/clothing/discount"
+                className="font-medium text-gray-900 hover:text-blue-600"
               >
                 Offers
               </Link>

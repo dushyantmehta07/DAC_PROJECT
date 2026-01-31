@@ -164,18 +164,19 @@ public class ProductServiceImplementation implements ProductService {
 			List<String> sizes, Integer minPrice, Integer maxPrice, 
 			Integer minDiscount,String sort, String stock, Integer pageNumber, Integer pageSize ) {
 
-		Pageable pageable = PageRequest.of(pageNumber, pageSize);
+		// Set default values for pagination to avoid NullPointerException
+		int page = (pageNumber != null) ? pageNumber : 0;
+		int size = (pageSize != null) ? pageSize : 10;
+		Pageable pageable = PageRequest.of(page, size);
 		
 		List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
 		
-		
-		if (!colors.isEmpty()) {
+		// Handle null colors list
+		if (colors != null && !colors.isEmpty()) {
 			products = products.stream()
 			        .filter(p -> colors.stream().anyMatch(c -> c.equalsIgnoreCase(p.getColor())))
 			        .collect(Collectors.toList());
-		
-		
-		} 
+		}
 
 		if(stock!=null) {
 

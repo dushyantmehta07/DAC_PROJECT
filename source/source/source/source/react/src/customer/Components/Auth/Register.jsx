@@ -23,9 +23,16 @@ useEffect(()=>{
 },[jwt])
 
 
+
   useEffect(() => {
     if (auth.user || auth.error) setOpenSnackBar(true)
   }, [auth.user]);
+  
+  useEffect(() => {
+    if (auth.user) {
+      navigate("/");
+    }
+  }, [auth.user, navigate]);
   
   const handleSubmit = (event) => {
     event.preventDefault();

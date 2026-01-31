@@ -1,0 +1,111 @@
+
+import React from "react";
+import HomeCarousel from "../customer/Components/Carousel/HomeCarousel";
+import HomeProductSection from "../customer/Components/Home/HomeProductSection";
+
+import { sareePage1 } from "../Data/Saree/page1";
+import { dressPage1 } from "../Data/dress/page1";
+import { nightsuitsPage1 } from "../Data/NightSuits/nightsuits";
+import { kurtaPage1 } from "../Data/Kurta/kurta";
+import { mensShoesPage1 } from "../Data/shoes";
+import { mens_kurta } from "../Data/Men/men_kurta";
+import { lehenga_page1 } from "../Data/Women/Lehengas";
+
+// Add category navigation data and IDs to products
+const enhanceProductsWithCategory = (products, category, startId = 1) => {
+  return products.map((product, index) => {
+    // Parse price strings to numbers, handling ₹ symbol and commas
+    const parsePrice = (priceStr) => {
+      if (typeof priceStr === 'number') return priceStr;
+      if (!priceStr) return 0;
+      // Remove ₹ symbol, commas, and spaces, then parse to number
+      return parseInt(priceStr.toString().replace(/[₹,\s]/g, '')) || 0;
+    };
+    
+    return {
+      ...product,
+      id: product.id || product._id || (startId + index), // Add ID if not present
+      topLavelCategory: category.topLavelCategory,
+      secondLavelCategory: category.secondLavelCategory,
+      thirdLavelCategory: category.thirdLavelCategory,
+      // Use existing fields as-is, or fallback to selling_price for image
+      imageUrl: product.imageUrl || product.image,
+      // Ensure products have sizes array for cart functionality
+      sizes: product.sizes || product.size || [
+        { name: "Free Size", quantity: product.quantity || 100 }
+      ],
+      // Parse prices properly to avoid double ₹ symbols
+      discountedPrice: parsePrice(product.discountedPrice || product.selling_price),
+      price: parsePrice(product.price),
+      discountPersent: product.discountPersent || parseInt(product.disscount?.replace('% off', '')) || 0,
+    };
+  });
+};
+
+const Homepage = () => {
+  // Enhanced product data with proper category navigation
+  const enhancedMensKurta = enhanceProductsWithCategory(mens_kurta, {
+    topLavelCategory: "men",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "mens_kurta"
+  });
+
+  const enhancedMensShoes = enhanceProductsWithCategory(mensShoesPage1, {
+    topLavelCategory: "men",
+    secondLavelCategory: "footwear",
+    thirdLavelCategory: "shoes"
+  });
+
+  const enhancedLehengas = enhanceProductsWithCategory(lehenga_page1, {
+    topLavelCategory: "women",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "lehenga_choli"
+  });
+
+  const enhancedSarees = enhanceProductsWithCategory(sareePage1, {
+    topLavelCategory: "women",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "saree"
+  });
+
+  const enhancedDresses = enhanceProductsWithCategory(dressPage1, {
+    topLavelCategory: "women",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "dress"
+  });
+
+  const enhancedNightSuits = enhanceProductsWithCategory(nightsuitsPage1, {
+    topLavelCategory: "women",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "night_suits"
+  });
+
+  const enhancedWomensKurtas = enhanceProductsWithCategory(kurtaPage1, {
+    topLavelCategory: "women",
+    secondLavelCategory: "clothing",
+    thirdLavelCategory: "kurtas"
+  });
+
+  return (
+    <div>
+      {/* HOME CAROUSEL */}
+      
+        <HomeCarousel />
+     
+
+      {/* PRODUCT SECTIONS */}
+      <div className="space-y-10 py-20">
+        <HomeProductSection data={enhancedMensKurta} section={"Men's Kurta"} />
+        <HomeProductSection data={enhancedMensShoes} section={"Men's Shoes"} />
+        <HomeProductSection data={enhancedLehengas} section={"Lehengas"} />
+        <HomeProductSection data={enhancedSarees} section={"Saree"} />
+        <HomeProductSection data={enhancedDresses} section={"Dress"} />
+        <HomeProductSection data={enhancedNightSuits} section={"Women's NightSuits"} />
+        <HomeProductSection data={enhancedWomensKurtas} section={"Women's Kurtas"} />
+      </div>
+    </div>
+  );
+};
+
+export default Homepage;
+
