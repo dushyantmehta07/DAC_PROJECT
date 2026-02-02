@@ -113,8 +113,43 @@ public class AdminProductController {
 		return new ResponseEntity<>(products, HttpStatus.OK);
 	}
 
-/**
- * UPDATE PRODUCT
- * --------------
- * This API updates an existing product.
- * URL: /api/admin/products/{pr*
+	/**
+	 * UPDATE PRODUCT
+	 * --------------
+	 * This API updates an existing product.
+	 * URL: /api/admin/products/{productId}/update
+	 */
+	@PutMapping("/{productId}/update")
+	public ResponseEntity<Product> updateProductHandler(
+			@RequestBody Product req, // Updated product data
+			@PathVariable Long productId // Product ID from URL
+	) throws ProductException{
+
+		// Update product using service layer
+		Product updatedProduct = productService.updateProduct(productId, req);
+
+		return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+	}
+
+	/**
+	 * CREATE MULTIPLE PRODUCTS (BULK UPLOAD)
+	 * --------------------------------------
+	 * This API allows admin to add multiple products at once.
+	 * URL: /api/admin/products/creates
+	 */
+	@PostMapping("/creates")
+	public ResponseEntity<ApiResponse> createMultipleProduct(
+			@RequestBody CreateProductRequest[] reqs // Array of product requests
+	) throws ProductException{
+
+		// Loop through request array and create products one by one
+		for (CreateProductRequest product : reqs) {
+			productService.createProduct(product);
+		}
+
+		// Success response
+		ApiResponse res = new ApiResponse("products created successfully", true);
+
+		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+	}
+}
