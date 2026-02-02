@@ -17,58 +17,137 @@ import com.zosh.modal.Order;
 import com.zosh.response.ApiResponse;
 import com.zosh.service.OrderService;
 
-@RestController
-@RequestMapping("/api/admin/orders")
+/**
+ * AdminOrderController
+ * ---------------------
+ * This controller handles all ADMIN-level operations related to orders.
+ * Only admin users can access these APIs.
+ */
+@RestController // Marks this class as a REST controller
+@RequestMapping("/api/admin/orders") // Base URL for admin order APIs
 public class AdminOrderController {
-	
+
+	// Service layer dependency to handle business logic
 	private OrderService orderService;
-	
+
+	/**
+	 * Constructor-based dependency injection
+	 * Spring automatically injects OrderService here
+	 */
 	public AdminOrderController(OrderService orderService) {
-		this.orderService=orderService;
-	}
-	
-	@GetMapping("/")
-	public ResponseEntity<List<Order>> getAllOrdersHandler(){
-		List<Order> orders=orderService.getAllOrders();
-		
-		return new ResponseEntity<>(orders,HttpStatus.ACCEPTED);
-	}
-	
-	@PutMapping("/{orderId}/confirmed")
-	public ResponseEntity<Order> ConfirmedOrderHandler(@PathVariable Long orderId,
-			@RequestHeader("Authorization") String jwt) throws OrderException{
-		Order order=orderService.confirmedOrder(orderId);
-		return new ResponseEntity<Order>(order,HttpStatus.ACCEPTED);
-	}
-	
-	@PutMapping("/{orderId}/ship")
-	public ResponseEntity<Order> shippedOrderHandler(@PathVariable Long orderId,
-			@RequestHeader("Authorization") String jwt) throws OrderException{
-		Order order=orderService.shippedOrder(orderId);
-		return new ResponseEntity<Order>(order,HttpStatus.ACCEPTED);
-	}
-	
-	@PutMapping("/{orderId}/deliver")
-	public ResponseEntity<Order> deliveredOrderHandler(@PathVariable Long orderId,
-			@RequestHeader("Authorization") String jwt) throws OrderException{
-		Order order=orderService.deliveredOrder(orderId);
-		return new ResponseEntity<Order>(order,HttpStatus.ACCEPTED);
-	}
-	
-	@PutMapping("/{orderId}/cancel")
-	public ResponseEntity<Order> canceledOrderHandler(@PathVariable Long orderId,
-			@RequestHeader("Authorization") String jwt) throws OrderException{
-		Order order=orderService.cancledOrder(orderId);
-		return new ResponseEntity<Order>(order,HttpStatus.ACCEPTED);
-	}
-	
-	@DeleteMapping("/{orderId}/delete")
-	public ResponseEntity<ApiResponse> deleteOrderHandler(@PathVariable Long orderId,
-			@RequestHeader("Authorization") String jwt) throws OrderException{
-		orderService.deleteOrder(orderId);
-		ApiResponse res=new ApiResponse("Order Deleted Successfully",true);
-		System.out.println("delete method working....");
-		return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
+		this.orderService = orderService;
 	}
 
+	/**
+	 * GET ALL ORDERS
+	 * --------------
+	 * This API is used by admin to fetch all orders from the system.
+	 * URL: /api/admin/orders/
+	 */
+	@GetMapping("/")
+	public ResponseEntity<List<Order>> getAllOrdersHandler(){
+
+		// Fetch all orders using service layer
+		List<Order> orders = orderService.getAllOrders();
+
+		// Return orders list with HTTP status ACCEPTED (202)
+		return new ResponseEntity<>(orders, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * CONFIRM ORDER
+	 * -------------
+	 * This API confirms an order (Admin action).
+	 * URL: /api/admin/orders/{orderId}/confirmed
+	 */
+	@PutMapping("/{orderId}/confirmed")
+	public ResponseEntity<Order> ConfirmedOrderHandler(
+			@PathVariable Long orderId, // Order ID from URL
+			@RequestHeader("Authorization") String jwt // JWT token for security
+	) throws OrderException{
+
+		// Confirm the order using service layer
+		Order order = orderService.confirmedOrder(orderId);
+
+		// Return updated order
+		return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * SHIP ORDER
+	 * ----------
+	 * This API marks an order as shipped.
+	 * URL: /api/admin/orders/{orderId}/ship
+	 */
+	@PutMapping("/{orderId}/ship")
+	public ResponseEntity<Order> shippedOrderHandler(
+			@PathVariable Long orderId,
+			@RequestHeader("Authorization") String jwt
+	) throws OrderException{
+
+		// Update order status to SHIPPED
+		Order order = orderService.shippedOrder(orderId);
+
+		return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * DELIVER ORDER
+	 * -------------
+	 * This API marks an order as delivered.
+	 * URL: /api/admin/orders/{orderId}/deliver
+	 */
+	@PutMapping("/{orderId}/deliver")
+	public ResponseEntity<Order> deliveredOrderHandler(
+			@PathVariable Long orderId,
+			@RequestHeader("Authorization") String jwt
+	) throws OrderException{
+
+		// Update order status to DELIVERED
+		Order order = orderService.deliveredOrder(orderId);
+
+		return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * CANCEL ORDER
+	 * ------------
+	 * This API cancels an order.
+	 * URL: /api/admin/orders/{orderId}/cancel
+	 */
+	@PutMapping("/{orderId}/cancel")
+	public ResponseEntity<Order> canceledOrderHandler(
+			@PathVariable Long orderId,
+			@RequestHeader("Authorization") String jwt
+	) throws OrderException{
+
+		// Cancel the order
+		Order order = orderService.cancledOrder(orderId);
+
+		return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * DELETE ORDER
+	 * ------------
+	 * This API permanently deletes an order from the system.
+	 * URL: /api/admin/orders/{orderId}/delete
+	 */
+	@DeleteMapping("/{orderId}/delete")
+	public ResponseEntity<ApiResponse> deleteOrderHandler(
+			@PathVariable Long orderId,
+			@RequestHeader("Authorization") String jwt
+	) throws OrderException{
+
+		// Delete order using service layer
+		orderService.deleteOrder(orderId);
+
+		// Create custom API response
+		ApiResponse res = new ApiResponse("Order Deleted Successfully", true);
+
+		// Console log for debugging
+		System.out.println("delete method working....");
+
+		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+	}
 }
