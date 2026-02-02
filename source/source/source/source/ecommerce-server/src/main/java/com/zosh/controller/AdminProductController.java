@@ -19,71 +19,102 @@ import com.zosh.request.CreateProductRequest;
 import com.zosh.response.ApiResponse;
 import com.zosh.service.ProductService;
 
-@RestController
-@RequestMapping("/api/admin/products")
+/**
+ * AdminProductController
+ * ----------------------
+ * This controller handles all ADMIN-related product operations
+ * such as creating, updating, deleting, and viewing products.
+ */
+@RestController // Marks this class as a REST controller
+@RequestMapping("/api/admin/products") // Base URL for admin product APIs
 public class AdminProductController {
-	
+
+	// Service layer dependency for product-related business logic
 	private ProductService productService;
-	
+
+	/**
+	 * Constructor-based dependency injection
+	 * Spring automatically injects ProductService
+	 */
 	public AdminProductController(ProductService productService) {
 		this.productService = productService;
 	}
-	
+
+	/**
+	 * CREATE SINGLE PRODUCT
+	 * ---------------------
+	 * This API allows admin to add a new product.
+	 * URL: /api/admin/products/
+	 */
 	@PostMapping("/")
-	public ResponseEntity<Product> createProductHandler(@RequestBody CreateProductRequest req) throws ProductException{
-		
+	public ResponseEntity<Product> createProductHandler(
+			@RequestBody CreateProductRequest req // Request body containing product details
+	) throws ProductException{
+
+		// Create product using service layer
 		Product createdProduct = productService.createProduct(req);
-		
-		return new ResponseEntity<Product>(createdProduct,HttpStatus.ACCEPTED);
-		
-	}
-	
-	@DeleteMapping("/{productId}/delete")
-	public ResponseEntity<ApiResponse> deleteProductHandler(@PathVariable Long productId) throws ProductException{
-		
-		System.out.println("dlete product controller .... ");
-		String msg=productService.deleteProduct(productId);
-		System.out.println("dlete product controller .... msg "+msg);
-		ApiResponse res=new ApiResponse(msg,true);
-		
-		return new ResponseEntity<ApiResponse>(res,HttpStatus.ACCEPTED);
-		
-	}
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<Product>> findAllProduct(){
-		
-		List<Product> products = productService.getAllProducts();
-		
-		return new ResponseEntity<List<Product>>(products,HttpStatus.OK);
-	}
-	
-	@GetMapping("/recent")
-	public ResponseEntity<List<Product>> recentlyAddedProduct(){
-		
-		List<Product> products = productService.recentlyAddedProduct();
-		
-		return new ResponseEntity<List<Product>>(products,HttpStatus.OK);
-	}
-	
-	
-	@PutMapping("/{productId}/update")
-	public ResponseEntity<Product> updateProductHandler(@RequestBody Product req,@PathVariable Long productId) throws ProductException{
-		
-		Product updatedProduct=productService.updateProduct(productId, req);
-		
-		return new ResponseEntity<Product>(updatedProduct,HttpStatus.OK);
-	}
-	
-	@PostMapping("/creates")
-	public ResponseEntity<ApiResponse> createMultipleProduct(@RequestBody CreateProductRequest[] reqs) throws ProductException{
-		
-		for(CreateProductRequest product:reqs) {
-			productService.createProduct(product);
-		}
-		
-		ApiResponse res=new ApiResponse("products created successfully",true);
-		return new ResponseEntity<ApiResponse>(res,HttpStatus.ACCEPTED);
+
+		// Return created product
+		return new ResponseEntity<>(createdProduct, HttpStatus.ACCEPTED);
 	}
 
-}
+	/**
+	 * DELETE PRODUCT
+	 * --------------
+	 * This API deletes a product by product ID.
+	 * URL: /api/admin/products/{productId}/delete
+	 */
+	@DeleteMapping("/{productId}/delete")
+	public ResponseEntity<ApiResponse> deleteProductHandler(
+			@PathVariable Long productId // Product ID from URL
+	) throws ProductException{
+
+		// Debug logs
+		System.out.println("delete product controller .... ");
+
+		// Delete product using service layer
+		String msg = productService.deleteProduct(productId);
+
+		System.out.println("delete product controller .... msg " + msg);
+
+		// Custom API response
+		ApiResponse res = new ApiResponse(msg, true);
+
+		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+	}
+
+	/**
+	 * GET ALL PRODUCTS
+	 * ----------------
+	 * This API fetches all products for admin dashboard.
+	 * URL: /api/admin/products/all
+	 */
+	@GetMapping("/all")
+	public ResponseEntity<List<Product>> findAllProduct(){
+
+		// Fetch all products from database
+		List<Product> products = productService.getAllProducts();
+
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+	/**
+	 * GET RECENTLY ADDED PRODUCTS
+	 * ---------------------------
+	 * This API returns recently added products (used in dashboard).
+	 * URL: /api/admin/products/recent
+	 */
+	@GetMapping("/recent")
+	public ResponseEntity<List<Product>> recentlyAddedProduct(){
+
+		// Fetch recently added products
+		List<Product> products = productService.recentlyAddedProduct();
+
+		return new ResponseEntity<>(products, HttpStatus.OK);
+	}
+
+/**
+ * UPDATE PRODUCT
+ * --------------
+ * This API updates an existing product.
+ * URL: /api/admin/products/{pr*
