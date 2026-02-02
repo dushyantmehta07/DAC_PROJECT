@@ -1,4 +1,7 @@
+// React hook for managing local component state
 import { useState } from "react";
+
+// Material UI components for typography and form layout
 import { Typography } from "@mui/material";
 import {
   Grid,
@@ -10,12 +13,20 @@ import {
   MenuItem,
 } from "@mui/material";
 
+// Fragment allows grouping elements without adding extra nodes to the DOM
 import { Fragment } from "react";
+
+// External CSS file for styling the create product form
 import "./CreateProductForm.css";
+
+// Redux hook used to trigger actions
 import { useDispatch } from "react-redux";
+
+// Redux action responsible for sending product data to backend
 import { createProduct } from "../../../Redux/Customers/Product/Action";
 
-
+// Default size structure used when the form loads
+// Helps in rendering size inputs dynamically
 const initialSizes = [
   { name: "S", quantity: 0 },
   { name: "M", quantity: 0 },
@@ -23,7 +34,9 @@ const initialSizes = [
 ];
 
 const CreateProductForm = () => {
-  
+
+  // Main state object holding all form field values
+  // This will be sent to backend when form is submitted
   const [productData, setProductData] = useState({
     imageUrl: "",
     brand: "",
@@ -32,16 +45,22 @@ const CreateProductForm = () => {
     discountedPrice: "",
     price: "",
     discountPersent: "",
-    size: initialSizes,
+    size: initialSizes, // Array of size objects (S, M, L with quantities)
     quantity: "",
     topLavelCategory: "",
     secondLavelCategory: "",
     thirdLavelCategory: "",
     description: "",
   });
-const dispatch=useDispatch();
-const jwt=localStorage.getItem("jwt")
 
+  // Redux dispatch function to call actions
+  const dispatch = useDispatch();
+
+  // JWT token required for authorized admin operations
+  const jwt = localStorage.getItem("jwt");
+
+  // Handles changes for all simple input fields
+  // Prevents writing separate handlers for each input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
@@ -50,30 +69,42 @@ const jwt=localStorage.getItem("jwt")
     }));
   };
 
+  // Handles updates for size-related fields (size name & size quantity)
+  // Uses index to update the correct size object
   const handleSizeChange = (e, index) => {
     let { name, value } = e.target;
-    name==="size_quantity"?name="quantity":name=e.target.name;
 
+    // Map UI-specific field name to actual state property
+    if (name === "size_quantity") name = "quantity";
+
+    // Create a shallow copy of size array to avoid mutating state directly
     const sizes = [...productData.size];
+
+    // Update the specific field for the selected size
     sizes[index][name] = value;
+
+    // Update state with modified size data
     setProductData((prevState) => ({
       ...prevState,
       size: sizes,
     }));
   };
 
-
-
-
+  // Called when admin submits the form
+  // Sends product data to backend via Redux action
   const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(createProduct({data:productData,jwt}))
+    e.preventDefault(); // Prevents page reload
+
+    // Dispatch create product action with payload and token
+    dispatch(createProduct({ data: productData, jwt }));
+
+    // Log data for debugging and verification
     console.log(productData);
   };
 
-
   return (
     <Fragment className="createProductContainer ">
+      {/* Heading for admin product creation page */}
       <Typography
         variant="h3"
         sx={{ textAlign: "center" }}
@@ -81,11 +112,15 @@ const jwt=localStorage.getItem("jwt")
       >
         Add New Product
       </Typography>
+
+      {/* Form wrapper for product details */}
       <form
         onSubmit={handleSubmit}
         className="createProductContainer min-h-screen"
       >
         <Grid container spacing={2}>
+
+          {/* Product image URL input */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -95,6 +130,8 @@ const jwt=localStorage.getItem("jwt")
               onChange={handleChange}
             />
           </Grid>
+
+          {/* Brand name input */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -104,7 +141,8 @@ const jwt=localStorage.getItem("jwt")
               onChange={handleChange}
             />
           </Grid>
-        
+
+          {/* Product title input */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -114,6 +152,8 @@ const jwt=localStorage.getItem("jwt")
               onChange={handleChange}
             />
           </Grid>
+
+          {/* Color selection input */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -123,6 +163,8 @@ const jwt=localStorage.getItem("jwt")
               onChange={handleChange}
             />
           </Grid>
+
+          {/* Overall product quantity */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -133,6 +175,8 @@ const jwt=localStorage.getItem("jwt")
               type="number"
             />
           </Grid>
+
+          {/* Original price before discount */}
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -143,6 +187,8 @@ const jwt=localStorage.getItem("jwt")
               type="number"
             />
           </Grid>
+
+          {/* Discounted selling price */}
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -153,7 +199,8 @@ const jwt=localStorage.getItem("jwt")
               type="number"
             />
           </Grid>
-          
+
+          {/* Discount percentage calculation reference */}
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -164,6 +211,8 @@ const jwt=localStorage.getItem("jwt")
               type="number"
             />
           </Grid>
+
+          {/* Top-level category selection */}
           <Grid item xs={6} sm={4}>
             <FormControl fullWidth>
               <InputLabel>Top Level Category</InputLabel>
@@ -179,6 +228,8 @@ const jwt=localStorage.getItem("jwt")
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Second-level category selection */}
           <Grid item xs={6} sm={4}>
             <FormControl fullWidth>
               <InputLabel>Second Level Category</InputLabel>
@@ -194,6 +245,8 @@ const jwt=localStorage.getItem("jwt")
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Third-level category selection */}
           <Grid item xs={6} sm={4}>
             <FormControl fullWidth>
               <InputLabel>Third Level Category</InputLabel>
@@ -211,10 +264,11 @@ const jwt=localStorage.getItem("jwt")
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Product description textarea */}
           <Grid item xs={12}>
             <TextField
               fullWidth
-              id="outlined-multiline-static"
               label="Description"
               multiline
               name="description"
@@ -223,8 +277,11 @@ const jwt=localStorage.getItem("jwt")
               value={productData.description}
             />
           </Grid>
+
+          {/* Loop through sizes array to render dynamic size inputs */}
           {productData.size.map((size, index) => (
-            <Grid container item spacing={3} >
+            <Grid container item spacing={3} key={index}>
+              {/* Size name (S, M, L etc.) */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Size Name"
@@ -235,6 +292,8 @@ const jwt=localStorage.getItem("jwt")
                   fullWidth
                 />
               </Grid>
+
+              {/* Quantity for the specific size */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Quantity"
@@ -244,10 +303,12 @@ const jwt=localStorage.getItem("jwt")
                   required
                   fullWidth
                 />
-              </Grid> </Grid>
-            
+              </Grid>
+            </Grid>
           ))}
-          <Grid item xs={12} >
+
+          {/* Submit button to add product */}
+          <Grid item xs={12}>
             <Button
               variant="contained"
               sx={{ p: 0.7 }}
@@ -257,7 +318,6 @@ const jwt=localStorage.getItem("jwt")
             >
               Add New Product
             </Button>
-            
           </Grid>
         </Grid>
       </form>
